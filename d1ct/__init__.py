@@ -54,10 +54,15 @@ class d1ct(dict):
         if _DEBUGMODE:
             _dbgprint(self, *args, **kwargs)
         super().__init__()
-        for k, v in dict(*args, **kwargs).items():
+        _ = dict({
+            k: v for k, v in self.__class__.__dict__.items()
+            if (type(k) is str and not k.startswith('_')) and not callable(v)
+        })
+        _.update(*args, **kwargs)
+        for k, v in _.items():
             super().__setitem__(k, _wrap(v))
         super().__setattr__("__dict__", self)
-
+        
     def __setitem__(self, key, value):
         if _DEBUGMODE:
             _dbgprint(self, key, value)
